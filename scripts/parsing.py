@@ -8,21 +8,31 @@ def getBitRatesVals(bitRateString):
     bitRateString = bitRateString.split(';')
     return bitRateString
 
-endpoint = "https://webhooks.mongodb-realm.com/api/client/v2.0/app/wifirobot-zpufi/service/entries/incoming_webhook/uploadEntry"
+endpoint = 'https://data.mongodb-api.com/app/wifirobot-zpufi/endpoint/entries/uploadEntry'
 
 networks = get_interfaces(interface='wlan0')
 for network in networks:
-    print(network['Name'])
-    #print(network)
-    
+    print(network['Name'])    
     name = network['Name']
     address = network['Address']
+
     signalLevel = network['Signal Level']
+    signalLevel = int(signalLevel) #get numeric value
+
     bitRates = network['Bit Rates']
-    bitRates = getBitRatesVals(bitRates)
+
+    #changes bit rate string to array of values
+    bitRates = getBitRatesVals(bitRates) 
+
     quality = network['Quality']
+    quality = int(quality)  #get numeric value
+
     channel = network['Channel']
+    channel = int(channel)  #get numeric value
+
     frequency = network['Frequency']
+    frequency = float(frequency) #get numeric value
+
     encryption = network['Encryption']
     
     r = requests.post(endpoint, json={'name' : name, 'address': address, 'signalLevel': signalLevel, 'bitRates' : bitRates, 'quality' : quality, 'channel' : channel, 'frequency' : frequency, 'encryption' : encryption})
