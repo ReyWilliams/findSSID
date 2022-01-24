@@ -1,11 +1,6 @@
 #! /usr/bin/env python
 
-# Hugo Chargois - 26 Apr. 2021 - v0.0.4
 # Parses the output of iwlist scan into a table
-
-# You can add or change the functions to parse the properties
-# of each AP (cell) below. They take one argument, the bunch of text
-# describing one cell in iwlist scan and return a property of that cell.
 
 import re
 import subprocess
