@@ -6,9 +6,8 @@ def getBitRatesVals(bitRateString): #splits bit rate string into array of number
     pattern = re.compile(r'\s+')
     bitRateString = re.sub(pattern, '', bitRateString)
     bitRateString = bitRateString.split(';')
-    for strNum in bitRateString:
-        strNum = int(strNum)
-    return bitRateString
+    changedVals = [int(numeric_string) for numeric_string in bitRateString]
+    return changedVals
 
 endpoint = 'https://data.mongodb-api.com/app/wifirobot-zpufi/endpoint/entries/uploadEntry'
 
