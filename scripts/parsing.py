@@ -1,11 +1,13 @@
 from iw_parse import get_interfaces
 import requests, re
 
-def getBitRatesVals(bitRateString):
+def getBitRatesVals(bitRateString): #splits bit rate string into array of numbers
     bitRateString = bitRateString.replace('Mb/s', '')
     pattern = re.compile(r'\s+')
     bitRateString = re.sub(pattern, '', bitRateString)
     bitRateString = bitRateString.split(';')
+    for strNum in bitRateString:
+        strNum = int(strNum)
     return bitRateString
 
 endpoint = 'https://data.mongodb-api.com/app/wifirobot-zpufi/endpoint/entries/uploadEntry'
