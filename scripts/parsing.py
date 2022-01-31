@@ -36,6 +36,8 @@ for network in networks:
     frequency = float(frequency) #get numeric value
 
     encryption = network['Encryption']
+    encryption = 1 if encryption is "Open" else 0
+
     
     r = requests.post(endpoint, json={'name' : name, 'address': address, 'signalLevel': signalLevel, 'bitRates' : bitRates, 'quality' : quality, 'channel' : channel, 'frequency' : frequency, 'encryption' : encryption})
     print(r.status_code, r.reason)
