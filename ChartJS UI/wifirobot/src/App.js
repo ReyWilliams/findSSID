@@ -46,7 +46,7 @@ const App = () => {
 	};
 
 	const getAPListByName = () => {
-		DataService.getAPsByName('fau')
+		DataService.getAPsByName('fauwpa2')
 			.then((response) => {
 				const parsedAP = DataService.parseAPList(response.data);
 				setAPList(parsedAP);
