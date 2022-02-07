@@ -2,7 +2,7 @@ import http from '../http-common';
 const { EJSON } = require('bson');
 
 class DataService {
-	getAP() {
+	getAPs() {
 		return http.get(`/getEntries`);
 	}
 
@@ -18,6 +18,5 @@ class DataService {
 		});
 	}
 }
-
 
 export default new DataService();

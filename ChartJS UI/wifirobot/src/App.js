@@ -20,22 +20,23 @@ const options = {
 	},
 };
 
-let data = {
-	labels: ['One', 'Two', 'Three'],
-	datasets: [
-		{
-			data: [1, 2, 3],
-			borderColor: 'rgb(75, 192, 192)',
-		},
-	],
-};
+// let data = {
+// 	labels: ['One', 'Two', 'Three'],
+// 	datasets: [
+// 		{
+// 			data: [1, 2, 3],
+// 			borderColor: 'rgb(75, 192, 192)',
+// 		},
+// 	],
+// };
 
 const App = () => {
 	const [ap, setAP] = useState([]);
 	const [apList, setAPList] = useState([]);
+	const [data, setData] = useState({ labels: [], datasets: [] });
 
-	const getAP = () => {
-		DataService.getAP()
+	const getAllAPs = () => {
+		DataService.getAPs()
 			.then((response) => {
 				const parsedAP = DataService.parseAPList(response.data);
 				setAP(parsedAP);
@@ -46,10 +47,11 @@ const App = () => {
 	};
 
 	const getAPListByName = () => {
-		DataService.getAPsByName('fauwpa2')
+		DataService.getAPsByName('fau')
 			.then((response) => {
-				const parsedAP = DataService.parseAPList(response.data);
+				const parsedAP = DataService.parseAPList(response.data.entries);
 				setAPList(parsedAP);
+				console.log(parsedAP);
 			})
 			.catch((e) => {
 				console.log(e);
@@ -57,33 +59,30 @@ const App = () => {
 	};
 
 	useEffect(() => {
-		getAP();
+		// getAllAPs();
 		getAPListByName();
 	}, []);
 
 	useEffect(() => {
-		data = {
+		setData({
 			labels: apList.map((element) => {
-				return moment(element.date).format('h:mm:ss a');
+				return moment(element.date).format('MM-DD, h:mm:ss a');
 			}),
-			// labels: ['One', 'Two', 'Three'],
 			datasets: [
 				{
 					data: apList.map((element) => {
 						return element.quality;
 					}),
-					// data: [1, 2, 3],
+					borderColor: 'rgb(75, 192, 192)',
 				},
 			],
-		};
-		console.log(data);
+		});
 	}, [apList]);
 
 	return (
 		<div>
 			<h1>AP List</h1>
-			{/* {JSON.stringify(ap[0])} */}
-			{ap?.map((ap_point) => {
+			{/*ap?.map((ap_point) => {
 				return (
 					<Card style={{ width: '18rem' }}>
 						<Card.Body>
@@ -95,8 +94,9 @@ const App = () => {
 						</Card.Body>
 					</Card>
 				);
-			})}
-			{apList?.map((ap_point) => {
+			}) */}
+
+			{apList?.slice(0, 5).map((ap_point) => {
 				return (
 					<Card style={{ width: '18rem' }}>
 						<Card.Body>
@@ -114,7 +114,7 @@ const App = () => {
 				);
 			})}
 
-			{apList && <Line options={options} data={data} />}
+			{apList && <Line redraw options={options} data={data} />}
 		</div>
 	);
 };
