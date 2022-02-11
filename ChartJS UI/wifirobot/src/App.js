@@ -1,5 +1,5 @@
 import DataService from './services/ap_entries';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import { Button, Collapse } from 'react-bootstrap';
 import { Line } from 'react-chartjs-2';
@@ -35,6 +35,9 @@ const App = () => {
 	const [apListOpenToggle, setAPListOpenToggle] = useState(true);
 	const [apNames, setAPNames] = useState([]);
 	const [selectedAPName, setSelectedAPName] = useState('');
+
+	const chartRef = useRef(null);
+	const executeScroll = () => chartRef.current.scrollIntoView();
 
 	const getAllAPs = () => {
 		DataService.getAPs()
@@ -201,13 +204,16 @@ const App = () => {
 										<Button
 											to={''}
 											className='btn btn-primary mb-3'
-											onClick={() => setMACAddress(ap_point.address)}>
+											onClick={() => {
+												setMACAddress(ap_point.address);
+												executeScroll();
+											}}>
 											View Performance
 										</Button>
 
-										<Link to={''} className='btn btn-outline-primary mb-3'>
+										{/* <Link to={''} className='btn btn-outline-primary mb-3'>
 											Views Appointments
-										</Link>
+										</Link> */}
 									</div>
 								</div>
 							</div>
@@ -215,7 +221,7 @@ const App = () => {
 					))}
 				</div>
 			</Collapse>
-
+			<div ref={chartRef}></div>
 			<div style={{ width: '100%', height: '80vh' }}>
 				{apListByMAC && <Line options={options} data={data} />}
 			</div>
