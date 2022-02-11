@@ -21,21 +21,8 @@ const options = {
 			text: 'AP Over Time',
 		},
 	},
+	maintainAspectRatio: false,
 };
-
-const filterUnique = (value, index, self) => {
-	return self.indexOf(value) === index;
-};
-
-// let data = {
-// 	labels: ['One', 'Two', 'Three'],
-// 	datasets: [
-// 		{
-// 			data: [1, 2, 3],
-// 			borderColor: 'rgb(75, 192, 192)',
-// 		},
-// 	],
-// };
 
 const App = () => {
 	const [aps, setAPs] = useState([]);
@@ -102,8 +89,6 @@ const App = () => {
 
 	useEffect(() => {
 		getAllAPs();
-		// getAPListByName('fau');
-
 		setData({
 			labels: ['One', 'Two', 'Three'],
 			datasets: [
@@ -231,8 +216,8 @@ const App = () => {
 				</div>
 			</Collapse>
 
-			<div className='m-5'>
-				{namedAPList && <Line options={options} data={data} />}
+			<div style={{ width: '100%', height: '80vh' }}>
+				{apListByMAC && <Line options={options} data={data} />}
 			</div>
 		</div>
 	);
