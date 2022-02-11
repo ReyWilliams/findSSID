@@ -3,13 +3,17 @@ const { EJSON } = require('bson');
 
 class DataService {
 	getAPs() {
-		return http.get(`/getEntries`);
+		return http.get(`/getAllEntries`);
 	}
 
 	getAPsByName(name) {
-		return http.get(`/getEntryByName?name=${name}`);
+		return http.get(`/getEntriesByName?name=${name}`);
 	}
-
+	
+	getAPsByAddress(address) {
+		return http.get(`/getEntriesByAddress?address=${address}`);
+	}
+getEntriesByAddress
 	parseAPList(APList) {
 		return APList.map((ap_point) => {
 			return (ap_point = EJSON.parse(JSON.stringify(ap_point), {

@@ -1,10 +1,13 @@
 import DataService from './services/ap_entries';
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
-import { Card } from 'react-bootstrap';
+import { Button, Collapse } from 'react-bootstrap';
 import { Line } from 'react-chartjs-2';
 import { Chart, registerables } from 'chart.js';
 import * as moment from 'moment';
+import './App.css';
+import { Link } from 'react-router-dom';
+
 Chart.register(...registerables);
 
 const options = {
@@ -20,6 +23,10 @@ const options = {
 	},
 };
 
+const filterUnique = (value, index, self) => {
+	return self.indexOf(value) === index;
+};
+
 // let data = {
 // 	labels: ['One', 'Two', 'Three'],
 // 	datasets: [
@@ -31,90 +38,202 @@ const options = {
 // };
 
 const App = () => {
-	const [ap, setAP] = useState([]);
-	const [apList, setAPList] = useState([]);
+	const [aps, setAPs] = useState([]);
+	const [namedAPList, setNamedAPList] = useState([]);
 	const [data, setData] = useState({ labels: [], datasets: [] });
+	const [addresses, setAddresses] = useState(['Select a MAC Address']);
+	const [MACAddress, setMACAddress] = useState('');
+	const [render, setRender] = useState(Math.random());
+	const [apListByMAC, setAPListByMAC] = useState([]);
+	const [apListOpenToggle, setAPListOpenToggle] = useState(true);
+	const [apNames, setAPNames] = useState([]);
+	const [selectedAPName, setSelectedAPName] = useState('');
 
 	const getAllAPs = () => {
 		DataService.getAPs()
 			.then((response) => {
 				const parsedAP = DataService.parseAPList(response.data);
-				setAP(parsedAP);
+				setAPs(parsedAP);
 			})
 			.catch((e) => {
 				console.log(e);
 			});
 	};
 
-	const getAPListByName = () => {
-		DataService.getAPsByName('fau')
+	const getAPListByAddress = (address) => {
+		DataService.getAPsByAddress(address)
 			.then((response) => {
-				const parsedAP = DataService.parseAPList(response.data.entries);
-				setAPList(parsedAP);
-				console.log(parsedAP);
+				const parsedAP = DataService.parseAPList(response.data);
+				setAPListByMAC(parsedAP);
 			})
 			.catch((e) => {
 				console.log(e);
 			});
+	};
+
+	const getAPListByName = (APName) => {
+		DataService.getAPsByName(APName)
+			.then((response) => {
+				const parsedAP = DataService.parseAPList(response.data.entries);
+				setNamedAPList(parsedAP);
+				const addrs = response.data.addresses.map((addrss) => {
+					return addrss._id;
+				});
+				setAddresses(['Select a MAC Address'].concat(addrs));
+			})
+			.catch((e) => {
+				console.log(e);
+			});
+	};
+
+	const onChangMACAddress = (e) => {
+		const MACAddr = e.target.value;
+		if (MACAddr === 'Select a MAC Address') return;
+		setMACAddress(MACAddr);
+		setRender(Math.random());
+	};
+
+	const onChangeAP = (e) => {
+		const ap_name = e.target.value;
+		if (ap_name === 'Select an Access point') return;
+		setSelectedAPName(ap_name);
+		setRender(Math.random());
 	};
 
 	useEffect(() => {
-		// getAllAPs();
-		getAPListByName();
+		getAllAPs();
+		// getAPListByName('fau');
+
+		setData({
+			labels: ['One', 'Two', 'Three'],
+			datasets: [
+				{
+					data: [1, 2, 3],
+					borderColor: '#4488bb',
+					backgroundColor: '#4488bb',
+				},
+			],
+		});
 	}, []);
 
 	useEffect(() => {
+		getAPListByName(selectedAPName);
+	}, [selectedAPName]);
+
+	useEffect(() => {
 		setData({
-			labels: apList.map((element) => {
+			labels: apListByMAC.map((element) => {
 				return moment(element.date).format('MM-DD, h:mm:ss a');
 			}),
 			datasets: [
 				{
-					data: apList.map((element) => {
+					label: `${MACAddress}`,
+					data: apListByMAC.map((element) => {
 						return element.quality;
 					}),
-					borderColor: 'rgb(75, 192, 192)',
+					borderColor: '#4488bb',
+					backgroundColor: '#4488bb',
 				},
 			],
 		});
-	}, [apList]);
+	}, [MACAddress, apListByMAC]);
+
+	useEffect(() => {
+		getAPListByAddress(MACAddress);
+	}, [MACAddress]);
+
+	useEffect(() => {
+		let ap_names = aps.map((ap) => {
+			return ap.name;
+		});
+
+		ap_names = [...new Set(ap_names)];
+		setAPNames(['Select an Access point'].concat(ap_names));
+	}, [aps]);
 
 	return (
-		<div>
-			<h1>AP List</h1>
-			{/*ap?.map((ap_point) => {
-				return (
-					<Card style={{ width: '18rem' }}>
-						<Card.Body>
-							<Card.Title>{ap_point.name}</Card.Title>
-							<Card.Text>
-								This is access point {ap_point.name} with an address of{' '}
-								{ap_point.address}
-							</Card.Text>
-						</Card.Body>
-					</Card>
-				);
-			}) */}
+		<div className='m-5'>
+			<div className='mb-4'>
+				<h1 className='text-center text-primary'>Accesss Point Dashboard</h1>
+			</div>
 
-			{apList?.slice(0, 5).map((ap_point) => {
-				return (
-					<Card style={{ width: '18rem' }}>
-						<Card.Body>
-							<Card.Title>{ap_point.name}</Card.Title>
-							<Card.Text>
-								This is access point {ap_point.name} with an address of{' '}
-								{ap_point.address}
-								<br />
-								{moment(ap_point.date).format('h:mm:ss a')}
-								<br />
-								{ap_point.quality}
-							</Card.Text>
-						</Card.Body>
-					</Card>
-				);
-			})}
+			<h4 className='text-center text-primary'>Select an Access Point</h4>
+			<div className='row pb-1 mb-3'>
+				<div className='input-group col-lg-4 m-2 mt-4 justify-content-center '>
+					<select onChange={onChangeAP} className='form-select'>
+						{apNames.map((apName) => (
+							<option value={apName} className='text-primary h4' key={apName}>
+								{`${apName}`}
+							</option>
+						))}
+					</select>
+				</div>
+			</div>
 
-			{apList && <Line redraw options={options} data={data} />}
+			<h4 className='text-center text-primary'>Select a MAC Address</h4>
+			<div className='row pb-1 mb-3'>
+				<div className='input-group col-lg-4 m-2 mt-4 justify-content-center '>
+					<select onChange={onChangMACAddress} className='form-select'>
+						{addresses.map((address) => (
+							<option value={address} className='text-primary h4' key={address}>
+								{`${address}`}
+							</option>
+						))}
+					</select>
+				</div>
+			</div>
+
+			<div className='text-center mb-3'>
+				<Button
+					onClick={() => setAPListOpenToggle(!apListOpenToggle)}
+					aria-controls='ap_list'
+					aria-expanded={apListOpenToggle}>
+					Toggle Access Point List
+				</Button>
+			</div>
+
+			<Collapse in={apListOpenToggle}>
+				<div className='row' id='ap_list'>
+					{namedAPList.map((ap_point) => (
+						<div className='col-lg-4 pb-1' key={ap_point.number}>
+							<div className='card'>
+								<div className='card-body'>
+									<Link to={''} className='h5 text-decoration-none'>
+										<h5 className='card-title text-primary text-center'>
+											{ap_point.name}
+										</h5>
+									</Link>
+									<p className='card-text'>
+										<strong>Address: </strong>
+										{ap_point.address}
+										<br />
+										<strong>Signal Level: </strong>
+										{ap_point.quality}
+										<br />
+									</p>
+									<div className='row justify-content-center mx-3'>
+										{/* eslint-disable-next-line no-underscore-dangle */}
+										<Button
+											to={''}
+											className='btn btn-primary mb-3'
+											onClick={() => setMACAddress(ap_point.address)}>
+											View Performance
+										</Button>
+
+										<Link to={''} className='btn btn-outline-primary mb-3'>
+											Views Appointments
+										</Link>
+									</div>
+								</div>
+							</div>
+						</div>
+					))}
+				</div>
+			</Collapse>
+
+			<div className='m-5'>
+				{namedAPList && <Line options={options} data={data} />}
+			</div>
 		</div>
 	);
 };

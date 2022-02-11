@@ -1,0 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+
+body,
+html {
+	font-family: 'Montserrat', sans-serif !important;
+}
+
+.App {
+	text-align: center;
+}
+
+.text-primary {
+	color: #4488bb !important;
+}
+
+.btn-primary,
+.btn-primary:hover,
+.btn-primary:active,
+.btn-primary:visited {
+	background-color: #4488bb !important;
+	border-color: #4488bb;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:active {
+	background-color: #4488bb !important;
+	border-color: #4488bb;
+
+	color: white;
+}
+
+.btn-outline-primary {
+	border-color: #4488bb;
+	color: #4488bb;
+}
