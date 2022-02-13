@@ -78,14 +78,20 @@ const App = () => {
 
 	const onChangMACAddress = (e) => {
 		const MACAddr = e.target.value;
-		if (MACAddr === 'Select a MAC Address') return;
+		if (MACAddr === 'Select a MAC Address') {
+			setMACAddress('');
+			return;
+		}
 		setMACAddress(MACAddr);
 		setRender(Math.random());
 	};
 
 	const onChangeAP = (e) => {
 		const ap_name = e.target.value;
-		if (ap_name === 'Select an Access point') return;
+		if (ap_name === 'Select an Access point') {
+			setSelectedAPName('');
+			return;
+		}
 		setSelectedAPName(ap_name);
 		setRender(Math.random());
 	};
@@ -172,12 +178,14 @@ const App = () => {
 			</div>
 
 			<div className='text-center mb-3'>
-				<Button
-					onClick={() => setAPListOpenToggle(!apListOpenToggle)}
-					aria-controls='ap_list'
-					aria-expanded={apListOpenToggle}>
-					Toggle Access Point List
-				</Button>
+				{namedAPList.length > 0 && (
+					<Button
+						onClick={() => setAPListOpenToggle(!apListOpenToggle)}
+						aria-controls='ap_list'
+						aria-expanded={apListOpenToggle}>
+						Toggle Access Point List
+					</Button>
+				)}
 			</div>
 
 			<Collapse in={apListOpenToggle}>
@@ -223,7 +231,7 @@ const App = () => {
 			</Collapse>
 			<div ref={chartRef}></div>
 			<div style={{ width: '100%', height: '80vh' }}>
-				{apListByMAC && <Line options={options} data={data} />}
+				{namedAPList.length > 0 && <Line options={options} data={data} />}
 			</div>
 		</div>
 	);
