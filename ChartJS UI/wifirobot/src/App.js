@@ -39,6 +39,18 @@ const App = () => {
 	const chartRef = useRef(null);
 	const executeScroll = () => chartRef.current.scrollIntoView();
 
+	const infoOptions = [
+		'Name',
+		'Address',
+		'BitRates',
+		'Channel',
+		'Date Captured',
+		'Encryption',
+		'Frequency',
+		'Quality',
+		'Signal Level',
+	];
+
 	const getAllAPs = () => {
 		DataService.getAPs()
 			.then((response) => {
@@ -55,6 +67,7 @@ const App = () => {
 			.then((response) => {
 				const parsedAP = DataService.parseAPList(response.data);
 				setAPListByMAC(parsedAP);
+				console.log(parsedAP);
 			})
 			.catch((e) => {
 				console.log(e);
@@ -150,7 +163,6 @@ const App = () => {
 			<div className='mb-4'>
 				<h1 className='text-center text-primary'>Accesss Point Dashboard</h1>
 			</div>
-
 			<h4 className='text-center text-primary'>Select an Access Point</h4>
 			<div className='row pb-1 mb-3'>
 				<div className='input-group col-lg-4 m-2 mt-4 justify-content-center '>
@@ -163,7 +175,6 @@ const App = () => {
 					</select>
 				</div>
 			</div>
-
 			<h4 className='text-center text-primary'>Select a MAC Address</h4>
 			<div className='row pb-1 mb-3'>
 				<div className='input-group col-lg-4 m-2 mt-4 justify-content-center '>
@@ -176,7 +187,6 @@ const App = () => {
 					</select>
 				</div>
 			</div>
-
 			<div className='text-center mb-3'>
 				{namedAPList.length > 0 && (
 					<Button
@@ -187,7 +197,24 @@ const App = () => {
 					</Button>
 				)}
 			</div>
-
+			<div className='content-center mb-3'>
+				{namedAPList.length > 0 &&
+					infoOptions.map((option) => (
+						<div className='form-check'>
+							<input
+								className='form-check-input'
+								type='checkbox'
+								value={option}
+								checked={option === 'Name' || option === 'Address'}
+								id={`${option}checkBox`}
+								onChange={() => {}}
+							/>
+							<label className='form-check-label' htmlFor={`${option}checkBox`}>
+								{option}
+							</label>
+						</div>
+					))}
+			</div>
 			<Collapse in={apListOpenToggle}>
 				<div className='row' id='ap_list'>
 					{namedAPList.map((ap_point) => (
