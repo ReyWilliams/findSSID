@@ -7,6 +7,8 @@ import { Chart, registerables } from 'chart.js';
 import * as moment from 'moment';
 import './App.css';
 import { Link } from 'react-router-dom';
+import JSONPretty from 'react-json-pretty';
+import 'react-json-pretty/themes/monikai.css';
 
 Chart.register(...registerables);
 
@@ -45,14 +47,17 @@ const App = () => {
 	const [render, setRender] = useState(Math.random());
 	const [apListByMAC, setAPListByMAC] = useState([]);
 	const [apListOpenToggle, setAPListOpenToggle] = useState(true);
+	const [rawRespToggle, setRawRespToggle] = useState(true);
 	const [apNames, setAPNames] = useState([]);
 	const [selectedAPName, setSelectedAPName] = useState('');
 	const [checkedState, setCheckedState] = useState(
 		new Array(infoOptions.length).fill(false)
 	);
 
-	const chartRef = useRef(null);
-	const executeScroll = () => chartRef.current.scrollIntoView();
+	const chartRef = useRef();
+	const JP_Ref = useRef();
+	const executeChartScroll = () => chartRef?.current.scrollIntoView();
+	const executeJPScroll = () => JP_Ref?.current.scrollIntoView();
 
 	const getAllAPs = () => {
 		DataService.getAPs()
@@ -109,6 +114,7 @@ const App = () => {
 		const ap_name = e.target.value;
 		if (ap_name === 'Select an Access point') {
 			setSelectedAPName('');
+			setNamedAPList([]);
 			return;
 		}
 		setSelectedAPName(ap_name);
@@ -204,6 +210,15 @@ const App = () => {
 						aria-expanded={apListOpenToggle}>
 						Toggle Access Point List
 					</Button>
+
+					{rawRespToggle && (
+						<Button
+							onClick={() => {
+								executeJPScroll();
+							}}>
+							View Raw Response
+						</Button>
+					)}
 				</div>
 			)}
 
@@ -312,7 +327,7 @@ const App = () => {
 											className='btn btn-primary mb-3'
 											onClick={() => {
 												setMACAddress(ap_point.address);
-												executeScroll();
+												executeChartScroll();
 											}}>
 											View Address Performance
 										</Button>
@@ -358,9 +373,42 @@ const App = () => {
 			)}
 
 			<div ref={chartRef}></div>
-			<div style={{ width: '100%', height: '80vh' }}>
-				{MACAddress && <Line options={options} data={data} />}
-			</div>
+			{namedAPList && (
+				<div style={{ width: '100%', height: '80vh' }}>
+					{MACAddress && <Line options={options} data={data} />}
+				</div>
+			)}
+
+			{namedAPList.length > 0 && (
+				<>
+					<h4 className='text-center text-primary mt-3'>Raw Response Data</h4>
+					<h5 className='text-center text-primary mb-3'>
+						<strong>Viewing: </strong>
+						{apListByMAC.length > 0
+							? 'MAC Address Information'
+							: 'Access Point Information'}
+					</h5>
+					<div className='text-center'>
+						<Button
+							onClick={() => setRawRespToggle(!rawRespToggle)}
+							aria-controls='JP-div'
+							className={rawRespToggle ? 'btn-danger m-2' : 'btn-success m-2'}
+							aria-expanded={rawRespToggle}>
+							Toggle Raw Response
+						</Button>
+					</div>
+
+					<Collapse in={rawRespToggle}>
+						<div id='JP-div' ref={JP_Ref}>
+							<JSONPretty
+								id='json-pretty'
+								data={
+									apListByMAC.length > 0 ? apListByMAC : namedAPList
+								}></JSONPretty>
+						</div>
+					</Collapse>
+				</>
+			)}
 		</div>
 	);
 };
