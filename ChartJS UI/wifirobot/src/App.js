@@ -25,6 +25,18 @@ const options = {
 };
 
 const App = () => {
+	const infoOptions = [
+		// 'Name',
+		'Address',
+		'BitRates',
+		'Channel',
+		'Date Captured',
+		'Encryption',
+		'Frequency',
+		'Quality',
+		'Signal Level',
+	];
+
 	const [aps, setAPs] = useState([]);
 	const [namedAPList, setNamedAPList] = useState([]);
 	const [data, setData] = useState({ labels: [], datasets: [] });
@@ -35,21 +47,12 @@ const App = () => {
 	const [apListOpenToggle, setAPListOpenToggle] = useState(true);
 	const [apNames, setAPNames] = useState([]);
 	const [selectedAPName, setSelectedAPName] = useState('');
+	const [checkedState, setCheckedState] = useState(
+		new Array(infoOptions.length).fill(false)
+	);
 
 	const chartRef = useRef(null);
 	const executeScroll = () => chartRef.current.scrollIntoView();
-
-	const infoOptions = [
-		'Name',
-		'Address',
-		'BitRates',
-		'Channel',
-		'Date Captured',
-		'Encryption',
-		'Frequency',
-		'Quality',
-		'Signal Level',
-	];
 
 	const getAllAPs = () => {
 		DataService.getAPs()
@@ -63,30 +66,33 @@ const App = () => {
 	};
 
 	const getAPListByAddress = (address) => {
-		DataService.getAPsByAddress(address)
-			.then((response) => {
-				const parsedAP = DataService.parseAPList(response.data);
-				setAPListByMAC(parsedAP);
-				console.log(parsedAP);
-			})
-			.catch((e) => {
-				console.log(e);
-			});
+		address &&
+			DataService.getAPsByAddress(address)
+				.then((response) => {
+					const parsedAP = DataService.parseAPList(response.data);
+					setAPListByMAC(parsedAP);
+					console.log(parsedAP);
+				})
+				.catch((e) => {
+					console.log(e);
+				});
 	};
 
 	const getAPListByName = (APName) => {
-		DataService.getAPsByName(APName)
-			.then((response) => {
-				const parsedAP = DataService.parseAPList(response.data.entries);
-				setNamedAPList(parsedAP);
-				const addrs = response.data.addresses.map((addrss) => {
-					return addrss._id;
+		APName &&
+			DataService.getAPsByName(APName)
+				.then((response) => {
+					const parsedAP = DataService.parseAPList(response.data.entries);
+					console.log(parsedAP[0]);
+					setNamedAPList(parsedAP);
+					const addrs = response.data.addresses.map((addrss) => {
+						return addrss._id;
+					});
+					setAddresses(['Select a MAC Address'].concat(addrs));
+				})
+				.catch((e) => {
+					console.log(e);
 				});
-				setAddresses(['Select a MAC Address'].concat(addrs));
-			})
-			.catch((e) => {
-				console.log(e);
-			});
 	};
 
 	const onChangMACAddress = (e) => {
@@ -109,8 +115,20 @@ const App = () => {
 		setRender(Math.random());
 	};
 
+	const updateChecked = (pos) => {
+		const updatedCheckedState = checkedState.map((item, index) =>
+			index === pos ? !item : item
+		);
+		setCheckedState(updatedCheckedState);
+	};
+
 	useEffect(() => {
 		getAllAPs();
+
+		let initChecked = checkedState;
+		initChecked[0] = true;
+		setCheckedState(initChecked);
+
 		setData({
 			labels: ['One', 'Two', 'Three'],
 			datasets: [
@@ -174,47 +192,46 @@ const App = () => {
 						))}
 					</select>
 				</div>
+				<hr className='justify-content-center mt-3' />
 			</div>
-			<h4 className='text-center text-primary'>Select a MAC Address</h4>
-			<div className='row pb-1 mb-3'>
-				<div className='input-group col-lg-4 m-2 mt-4 justify-content-center '>
-					<select onChange={onChangMACAddress} className='form-select'>
-						{addresses.map((address) => (
-							<option value={address} className='text-primary h4' key={address}>
-								{`${address}`}
-							</option>
-						))}
-					</select>
-				</div>
-			</div>
-			<div className='text-center mb-3'>
-				{namedAPList.length > 0 && (
+
+			{namedAPList.length > 0 && (
+				<div className='text-center mb-3'>
 					<Button
 						onClick={() => setAPListOpenToggle(!apListOpenToggle)}
 						aria-controls='ap_list'
+						className={apListOpenToggle ? 'btn-danger m-2' : 'btn-success m-2'}
 						aria-expanded={apListOpenToggle}>
 						Toggle Access Point List
 					</Button>
-				)}
-			</div>
-			<div className='content-center mb-3'>
-				{namedAPList.length > 0 &&
-					infoOptions.map((option) => (
-						<div className='form-check'>
-							<input
-								className='form-check-input'
-								type='checkbox'
-								value={option}
-								checked={option === 'Name' || option === 'Address'}
-								id={`${option}checkBox`}
-								onChange={() => {}}
-							/>
-							<label className='form-check-label' htmlFor={`${option}checkBox`}>
-								{option}
-							</label>
-						</div>
-					))}
-			</div>
+				</div>
+			)}
+
+			{apListOpenToggle && (
+				<div className='d-flex justify-content-center mb-3'>
+					{namedAPList.length > 0 &&
+						infoOptions.map((option, index) => (
+							<div className='form-check mx-2' key={`${option}${index}`}>
+								<input
+									className='form-check-input'
+									type='checkbox'
+									value={option}
+									checked={checkedState[index]}
+									id={`${option}checkBox`}
+									onChange={() => {
+										updateChecked(index);
+									}}
+								/>
+								<label
+									className='form-check-label'
+									htmlFor={`${option}checkBox`}>
+									{option}
+								</label>
+							</div>
+						))}
+				</div>
+			)}
+
 			<Collapse in={apListOpenToggle}>
 				<div className='row' id='ap_list'>
 					{namedAPList.map((ap_point) => (
@@ -227,12 +244,66 @@ const App = () => {
 										</h5>
 									</Link>
 									<p className='card-text'>
-										<strong>Address: </strong>
-										{ap_point.address}
-										<br />
-										<strong>Signal Level: </strong>
-										{ap_point.quality}
-										<br />
+										{checkedState[0] && (
+											<>
+												<strong>Address: </strong>
+												{ap_point.address}
+												<br />
+											</>
+										)}
+
+										{checkedState[1] && (
+											<>
+												<strong>Bit Rates: </strong>
+												{ap_point.bitRates}
+												<br />
+											</>
+										)}
+
+										{checkedState[2] && (
+											<>
+												<strong>Channel: </strong>
+												{ap_point.channel}
+												<br />
+											</>
+										)}
+
+										{checkedState[3] && (
+											<>
+												<strong>Date: </strong>
+												{moment(ap_point.date).format('MM-DD, h:mm:ss a')}
+												<br />
+											</>
+										)}
+
+										{checkedState[4] && (
+											<>
+												<strong>Encryption: </strong>
+												{ap_point.encryption}
+												<br />
+											</>
+										)}
+										{checkedState[5] && (
+											<>
+												<strong>Frequency: </strong>
+												{ap_point.frequency} GHz
+												<br />
+											</>
+										)}
+										{checkedState[6] && (
+											<>
+												<strong>Quality: </strong>
+												{ap_point.quality}
+												<br />
+											</>
+										)}
+										{checkedState[7] && (
+											<>
+												<strong>Signal Level: </strong>
+												{ap_point.signalLevel}
+												<br />
+											</>
+										)}
 									</p>
 									<div className='row justify-content-center mx-3'>
 										{/* eslint-disable-next-line no-underscore-dangle */}
@@ -243,12 +314,8 @@ const App = () => {
 												setMACAddress(ap_point.address);
 												executeScroll();
 											}}>
-											View Performance
+											View Address Performance
 										</Button>
-
-										{/* <Link to={''} className='btn btn-outline-primary mb-3'>
-											Views Appointments
-										</Link> */}
 									</div>
 								</div>
 							</div>
@@ -256,9 +323,43 @@ const App = () => {
 					))}
 				</div>
 			</Collapse>
+
+			{namedAPList.length > 10 && apListOpenToggle && (
+				<div className='text-center mb-3'>
+					<Button
+						onClick={() => setAPListOpenToggle(!apListOpenToggle)}
+						aria-controls='ap_list'
+						className={apListOpenToggle ? 'btn-danger m-2' : 'btn-success m-2'}
+						aria-expanded={apListOpenToggle}>
+						Toggle Access Point List
+					</Button>
+				</div>
+			)}
+
+			{selectedAPName && (
+				<>
+					<hr className='justify-content-center mt-3' />
+					<h4 className='text-center text-primary'>Select a MAC Address</h4>
+					<div className='row pb-1 mb-3'>
+						<div className='input-group col-lg-4 m-2 mt-4 justify-content-center '>
+							<select onChange={onChangMACAddress} className='form-select'>
+								{addresses.map((address) => (
+									<option
+										value={address}
+										className='text-primary h4'
+										key={address}>
+										{`${address}`}
+									</option>
+								))}
+							</select>
+						</div>
+					</div>
+				</>
+			)}
+
 			<div ref={chartRef}></div>
 			<div style={{ width: '100%', height: '80vh' }}>
-				{namedAPList.length > 0 && <Line options={options} data={data} />}
+				{MACAddress && <Line options={options} data={data} />}
 			</div>
 		</div>
 	);
