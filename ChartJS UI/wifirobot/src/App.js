@@ -32,6 +32,9 @@ const App = () => {
 					</div>
 				</nav>
 			</div>
+			<div className='mb-4'>
+				<h1 className='text-center text-primary'>Accesss Point Dashboard</h1>
+			</div>
 			<div className='container-fluid'>
 				<Routes>
 					<Route exact path='/' element={<Dashboard />} />

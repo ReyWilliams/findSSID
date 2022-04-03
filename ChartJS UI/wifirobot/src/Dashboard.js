@@ -1,4 +1,4 @@
-import DataService from './services/ap_entries';
+import EntryDataService from './services/ap_entries';
 import React, { useState, useEffect, useRef } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import { Button, Collapse } from 'react-bootstrap';
@@ -60,9 +60,9 @@ const Dashboard = () => {
 	const executeJPScroll = () => JP_Ref?.current.scrollIntoView();
 
 	const getAllAPs = () => {
-		DataService.getAPs()
+		EntryDataService.getAPs()
 			.then((response) => {
-				const parsedAP = DataService.parseAPList(response.data);
+				const parsedAP = EntryDataService.parseAPList(response.data);
 				setAPs(parsedAP);
 			})
 			.catch((e) => {
@@ -72,9 +72,9 @@ const Dashboard = () => {
 
 	const getAPListByAddress = (address) => {
 		address &&
-			DataService.getAPsByAddress(address)
+			EntryDataService.getAPsByAddress(address)
 				.then((response) => {
-					const parsedAP = DataService.parseAPList(response.data);
+					const parsedAP = EntryDataService.parseAPList(response.data);
 					setAPListByMAC(parsedAP);
 					console.log(parsedAP);
 				})
@@ -85,9 +85,9 @@ const Dashboard = () => {
 
 	const getAPListByName = (APName) => {
 		APName &&
-			DataService.getAPsByName(APName)
+			EntryDataService.getAPsByName(APName)
 				.then((response) => {
-					const parsedAP = DataService.parseAPList(response.data.entries);
+					const parsedAP = EntryDataService.parseAPList(response.data.entries);
 					console.log(parsedAP[0]);
 					setNamedAPList(parsedAP);
 					const addrs = response.data.addresses.map((addrss) => {
@@ -183,11 +183,7 @@ const Dashboard = () => {
 	}, [aps]);
 
 	return (
-		
-		<div className='m-5'>
-			<div className='mb-4'>
-				<h1 className='text-center text-primary'>Accesss Point Dashboard</h1>
-			</div>
+		<div className='container-fluid '>
 			<h4 className='text-center text-primary'>Select an Access Point</h4>
 			<div className='row pb-1 mb-3'>
 				<div className='input-group col-lg-4 m-2 mt-4 justify-content-center '>

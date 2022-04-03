@@ -1,7 +1,7 @@
-import http from '../http-common';
+import http from '../http-common-entries';
 const { EJSON } = require('bson');
 
-class DataService {
+class EntryDataService {
 	getAPs() {
 		return http.get(`/getAllEntries`);
 	}
@@ -23,4 +23,4 @@ getEntriesByAddress
 	}
 }
 
-export default new DataService();
+export default new EntryDataService();
