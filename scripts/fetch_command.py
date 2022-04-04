@@ -23,7 +23,7 @@ while True:
     # print statements
     # print(date)
     # print(epoch_time)
-    # print(seconds)
+    print("Time difference in seconds: " + str(seconds))
 
     # if command was submitted 30s or less, write command to file
     if(seconds <= 10):
