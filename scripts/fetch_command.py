@@ -26,10 +26,10 @@ while True:
     # print(seconds)
 
     # if command was submitted 30s or less, write command to file
-    if(seconds <= 30):
+    if(seconds <= 10):
         f = open("COMM.txt", "w")
         f.write(command)
         f.close()
 
-    # sleep for 30s
-    time.sleep(30)
+    # sleep for 5s
+    time.sleep(5)
