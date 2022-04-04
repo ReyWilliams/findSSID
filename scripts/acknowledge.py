@@ -1,0 +1,22 @@
+import requests
+
+
+# open file to read last acknowledged command
+f = open("ACKNOWLEDGE.txt", "r")
+
+# split the string by space
+commAndDate = f.read().split(' ')
+
+# the command is the first piece of text
+comm = commAndDate[0]
+
+# the date is the next
+date = commAndDate[1]
+
+print("command is: " + str(comm))
+print("date is: " + str(date))
+
+postReqString = "https://data.mongodb-api.com/app/wifirobot-zpufi/endpoint/config/ackRobotComm?name=" + comm + "&date=" + date
+
+r = requests.post(postReqString)
+print(r.status_code, r.reason)

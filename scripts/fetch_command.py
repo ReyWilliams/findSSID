@@ -6,7 +6,8 @@ while True:
 
     # fetcht the command and date from endpoint
     r = requests.get("https://data.mongodb-api.com/app/wifirobot-zpufi/endpoint/config/getComm")
-
+    print(r.status_code, r.reason)
+    
     # store response
     res = r.json()
 
