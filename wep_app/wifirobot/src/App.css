@@ -13,6 +13,10 @@ html {
 	color: #4488bb !important;
 }
 
+.bg-primary {
+	background-color: #4488bb !important;
+}
+
 .btn-primary,
 .btn-primary:hover,
 .btn-primary:active,
@@ -42,6 +46,4 @@ hr {
 	/* color: #4488bb !important; */
 	background-color: #4488bb !important;
 	border-color: grey;
-
-
 }

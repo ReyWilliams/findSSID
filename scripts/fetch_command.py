@@ -7,7 +7,7 @@ while True:
     # fetcht the command and date from endpoint
     r = requests.get("https://data.mongodb-api.com/app/wifirobot-zpufi/endpoint/config/getComm")
     print(r.status_code, r.reason)
-    
+
     # store response
     res = r.json()
 
@@ -24,7 +24,7 @@ while True:
     # print statements
     # print(date)
     # print(epoch_time)
-    print("Time difference in seconds: " + str(seconds))
+    # print("Time difference in seconds: " + str(seconds))
 
     # if command was submitted 30s or less, write command to file
     if(seconds <= 10):

@@ -8,6 +8,8 @@ import './App.css';
 
 const Config = () => {
 	const [commObj, setCommObj] = useState({});
+	const [sessionObj, setSessionObj] = useState({});
+	const [robotAckObj, setRobotAckObj] = useState({});
 	const [render, setRender] = useState(Math.random());
 
 	const setComm = (comm) => {
@@ -15,6 +17,49 @@ const Config = () => {
 			.then((response) => {
 				console.log(response);
 				setRender(Math.random());
+			})
+			.catch((e) => {
+				console.log(e);
+			});
+	};
+
+	const setSessionTime = () => {
+		ConfigDataService.setSessionTime()
+			.then((response) => {
+				console.log(response);
+				setRender(Math.random());
+			})
+			.catch((e) => {
+				console.log(e);
+			});
+	};
+
+	const getSessionTime = () => {
+		ConfigDataService.getSessionTime()
+			.then((response) => {
+				if (response.data.length > 0) {
+					const parsedSession = EntryDataService.parseAPList(response.data);
+					console.log(parsedSession);
+					setSessionObj(parsedSession[0]);
+				} else {
+					console.log(response.date);
+				}
+			})
+			.catch((e) => {
+				console.log(e);
+			});
+	};
+
+	const getRobotAck = () => {
+		ConfigDataService.getRobotAck()
+			.then((response) => {
+				if (response.data.length > 0) {
+					const parsedSession = EntryDataService.parseAPList(response.data);
+					console.log(parsedSession);
+					setRobotAckObj(parsedSession[0]);
+				} else {
+					console.log(response.date);
+				}
 			})
 			.catch((e) => {
 				console.log(e);
@@ -39,9 +84,13 @@ const Config = () => {
 
 	useEffect(() => {
 		getComm();
+		getSessionTime();
+		getRobotAck();
 	}, []);
 	useEffect(() => {
 		getComm();
+		getSessionTime();
+		getRobotAck();
 	}, [render]);
 
 	return (
@@ -52,8 +101,9 @@ const Config = () => {
 
 					<div>
 						<p className='text-center h5'>
-							There is a distinct way to approach the robot configuration. The
-							robot must be calibrated before it is able to fetch grid
+							There is a distinct way to approach the robot configuration.
+							Always start with a new session and confirm the time was recent.
+							The robot must be calibrated before it is able to fetch grid
 							dimensions and position coordinates. The user must click the{' '}
 							<span className='text-danger'>CAL</span> button to begin
 							calibrating and after calibration the user may use the{' '}
@@ -63,6 +113,32 @@ const Config = () => {
 							current position of the robot with{' '}
 							<span className='text-danger'>POS</span>. Here are the four
 							processes, the current process (if any) is highlighted.
+						</p>
+					</div>
+					<div className='d-flex justify-content-center mt-5'>
+						<Button
+							className='text-center '
+							onClick={() => setSessionTime()}
+							size='lg'>
+							Start New Session
+						</Button>
+					</div>
+					<div className='my-2'>
+						<h4 className='text-center'>
+							Time Since Session Started:{' '}
+							<span className='bg-danger text-white'>
+								<Moment interval={1000} fromNow>
+									{sessionObj?.date}
+								</Moment>
+							</span>
+						</h4>
+					</div>
+					<div className='d-flex justify-content-center '>
+						<p className='text-center text-black-50'>
+							<Moment format='dddd, MMMM Do YYYY, h:mm:ss a'>
+								{sessionObj?.date}
+							</Moment>
+							]
 						</p>
 					</div>
 					<div className='d-flex justify-content-center m-5'>
@@ -117,6 +193,14 @@ const Config = () => {
 								POS
 							</Button>
 						</div>
+						<div className='m-5 text-center'>
+							<Button
+								variant={commObj?.command === 'QUIT' ? 'secondary' : 'primary'}
+								onClick={() => setComm('QUIT')}
+								size='lg'>
+								QUIT
+							</Button>
+						</div>
 					</div>
 					<div>
 						<h4 className='text-center'>
@@ -127,10 +211,33 @@ const Config = () => {
 								</Moment>
 							</span>
 						</h4>
-						<p className='text-center text-black-50'>[
+						<p className='text-center text-black-50'>
+							[
 							<Moment format='dddd, MMMM Do YYYY, h:mm:ss a'>
 								{commObj?.date}
-							</Moment>]
+							</Moment>
+							]
+						</p>
+					</div>
+					<div>
+						<h4 className='text-center'>
+							The robot executed the command{' '}
+							<span className='bg-primary text-white'>
+								{robotAckObj?.command}
+							</span>{' '}
+							<span className='bg-danger text-white'>
+								<Moment unix interval={1000} fromNow>
+									{robotAckObj?.date}
+								</Moment>
+							</span>
+							{'.'}
+						</h4>
+						<p className='text-center text-black-50'>
+							[
+							<Moment unix format='dddd, MMMM Do YYYY, h:mm:ss a'>
+								{robotAckObj?.date}
+							</Moment>
+							]
 						</p>
 					</div>
 				</div>
