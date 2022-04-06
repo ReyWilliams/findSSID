@@ -12,6 +12,16 @@ const Config = () => {
 	const [robotAckObj, setRobotAckObj] = useState({});
 	const [render, setRender] = useState(Math.random());
 
+	const MINUTE_MS = 5000;
+
+	useEffect(() => {
+		const interval = setInterval(() => {
+			getRobotAck();
+		}, MINUTE_MS);
+
+		return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
+	}, []);
+
 	const setComm = (comm) => {
 		ConfigDataService.setCurrCommand(comm)
 			.then((response) => {

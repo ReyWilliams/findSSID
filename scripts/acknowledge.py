@@ -23,5 +23,5 @@ while True:
         r = requests.post(postReqString)
         print(r.status_code, r.reason)
     finally:
-    f.close()
+        f.close()
     time.sleep(5)
