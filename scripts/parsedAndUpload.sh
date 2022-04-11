@@ -1,11 +1,8 @@
 #!/bin/bash
 
-while true
-do
-	cd /home/pi/Desktop/Parsing
-	#python parsing.py
-	python fetch_command.py
-	python acknowledge.py
-	echo "Fetched Parsed and Uploaded"
-	sleep 30
-done
+cd /home/pi/Desktop/Parsing
+python fetch_command.py
+python acknowledge.py
+python parsing.py
+echo "Ran Scripts"
+
