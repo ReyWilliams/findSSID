@@ -9,7 +9,7 @@ while True:
         # split the string by space
         commAndDate = f.read().split(' ')
 
-        if(len(commAndDate) > 1):
+        if(len(commAndDate) >= 2):
             # the command is the first piece of text
             comm = commAndDate[0]
 
