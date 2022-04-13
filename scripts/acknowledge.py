@@ -4,7 +4,7 @@ import time
 while True:
     try:
         # open file to read last acknowledged command
-        f = open("ACKNOWLEDGE.txt", "r")
+        f = open("/home/pi/Desktop/Parsing/ACKNOWLEDGE.txt", "r")
 
         # split the string by space
         commAndDate = f.read().split(' ')

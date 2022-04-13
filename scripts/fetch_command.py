@@ -28,7 +28,7 @@ while True:
 
     # if command was submitted 30s or less, write command to file
     if(seconds <= 10):
-        f = open("COMM.txt", "w")
+        f = open("/home/pi/Desktop/Parsing/COMM.txt", "w")
         f.write(command)
         f.close()
 
