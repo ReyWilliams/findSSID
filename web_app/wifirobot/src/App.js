@@ -5,6 +5,7 @@ import './App.css';
 import 'react-json-pretty/themes/monikai.css';
 import Dashboard from './Dashboard';
 import Config from './Config';
+import Map from './Map';
 import logo from './images/wifi_icon.png';
 
 const App = () => {
@@ -26,7 +27,12 @@ const App = () => {
 						</li>
 						<li className='nav-item'>
 							<Link to='/config' className='nav-link'>
-								Robot Config
+								Config
+							</Link>
+						</li>
+						<li className='nav-item'>
+							<Link to='/map' className='nav-link'>
+								Map
 							</Link>
 						</li>
 					</div>
@@ -39,6 +45,7 @@ const App = () => {
 				<Routes>
 					<Route exact path='/' element={<Dashboard />} />
 					<Route exact path='/config' element={<Config />} />
+					<Route exact path='/map' element={<Map />} />
 				</Routes>
 			</div>
 		</div>

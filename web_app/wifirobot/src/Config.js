@@ -1,7 +1,6 @@
 import { Button, ListGroup } from 'react-bootstrap';
 import React, { useState, useEffect } from 'react';
 import ConfigDataService from './services/config_service';
-import * as moment from 'moment';
 import EntryDataService from './services/ap_entries';
 import Moment from 'react-moment';
 import './App.css';
@@ -112,9 +111,9 @@ const Config = () => {
 					<div>
 						<p className='text-center h5'>
 							There is a distinct way to approach the robot configuration.
-							Always start with a new session and confirm the time was recent.
-							The robot must be calibrated before it is able to fetch grid
-							dimensions and position coordinates. The user must click the{' '}
+							Always start with a new mapping session and confirm the time was
+							recent. The robot must be calibrated before it is able to fetch
+							grid dimensions and position coordinates. The user must click the{' '}
 							<span className='text-danger'>CAL</span> button to begin
 							calibrating and after calibration the user may use the{' '}
 							<span className='text-danger'>HOL</span> button to hold the robot
@@ -130,12 +129,12 @@ const Config = () => {
 							className='text-center '
 							onClick={() => setSessionTime()}
 							size='lg'>
-							Start New Session
+							Start New Mapping Session
 						</Button>
 					</div>
 					<div className='my-2'>
 						<h4 className='text-center'>
-							Time Since Session Started:{' '}
+							Time Since Mapping Session Started:{' '}
 							<span className='bg-danger text-white'>
 								<Moment interval={1000} fromNow>
 									{sessionObj?.date}

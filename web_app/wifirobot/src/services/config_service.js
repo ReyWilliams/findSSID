@@ -1,5 +1,4 @@
 import http from '../http-common-config.js';
-const { EJSON } = require('bson');
 
 class ConfigDataService {
 	setCurrCommand = (name) => {

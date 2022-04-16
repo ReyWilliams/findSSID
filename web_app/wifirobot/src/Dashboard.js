@@ -28,7 +28,6 @@ const options = {
 
 const Dashboard = () => {
 	const infoOptions = [
-		// 'Name',
 		'Address',
 		'BitRates',
 		'Channel',
