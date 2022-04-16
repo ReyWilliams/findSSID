@@ -1,5 +1,6 @@
 from iw_parse import get_interfaces
 import requests, re
+import time
 
 def getBitRatesVals(bitRateString): #splits bit rate string into array of numbers
     bitRateString = bitRateString.replace('Mb/s', '')

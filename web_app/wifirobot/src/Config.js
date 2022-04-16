@@ -145,6 +145,7 @@ const Config = () => {
 					</div>
 					<div className='d-flex justify-content-center '>
 						<p className='text-center text-black-50'>
+							[
 							<Moment format='dddd, MMMM Do YYYY, h:mm:ss a'>
 								{sessionObj?.date}
 							</Moment>
