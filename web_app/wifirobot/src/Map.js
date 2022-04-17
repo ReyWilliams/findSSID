@@ -29,14 +29,17 @@ const Map = () => {
 	const [gridSizes, setGridSizes] = useState([]);
 	const [sessionObj, setSessionObj] = useState({});
 	const [grid, setGrid] = useState([]);
+	const [distinctAPs, setDistinctAPs] = useState([]);
+	const [selectedAPName, setSelectedAPName] = useState('');
+	const [mappedAPs, setMappedAPs] = useState([]);
 	const [render, setRender] = useState(Math.random());
 
 	const [series, setSeries] = useState([
 		{
-			name: 'Jan',
+			name: 'Test AP',
 			data: [
-				{ x: '1', y: 3 },
-				{ x: '2', y: 5 },
+				{ x: 2, y: 3, z: 2 },
+				{ x: 5, y: 70, z: 3 },
 			],
 		},
 	]);
@@ -44,73 +47,26 @@ const Map = () => {
 	const [options, setOptions] = useState({
 		chart: {
 			height: 350,
-			type: 'heatmap',
-		},
-		plotOptions: {
-			heatmap: {
-				shadeIntensity: 0.5,
-				radius: 0,
-				useFillColorAsStroke: true,
-				// colorScale: {
-				// 	ranges: [
-				// 		{
-				// 			from: -30,
-				// 			to: 5,
-				// 			name: 'low',
-				// 			color: '#00A100',
-				// 		},
-				// 		{
-				// 			from: 6,
-				// 			to: 20,
-				// 			name: 'medium',
-				// 			color: '#128FD9',
-				// 		},
-				// 		{
-				// 			from: 21,
-				// 			to: 45,
-				// 			name: 'high',
-				// 			color: '#FFB200',
-				// 		},
-				// 		{
-				// 			from: 46,
-				// 			to: 55,
-				// 			name: 'extreme',
-				// 			color: '#FF0000',
-				// 		},
-				// 	],
-				// },
-			},
+			type: 'bubble',
 		},
 		dataLabels: {
-			enabled: true,
+			enabled: false,
 		},
-		stroke: {
-			width: 1,
+		fill: {
+			opacity: 0.8,
 		},
 		title: {
-			text: 'Access Point Heat Map',
+			text: 'Access Point Mapping',
 			align: 'center',
 		},
+		xaxis: {
+			tickAmount: 12,
+			type: 'category',
+		},
+		yaxis: {
+			max: 70,
+		},
 	});
-
-	useEffect(() => {
-		const range = [...Array(grid[1]).keys()].map((x) => x + 1);
-
-		let newSeries = range.map((val) => {
-			let matchingYs = gridAPs.filter((ap) => {
-				return parseInt(ap.posY) == val;
-			});
-			// console.log(matchingYs);
-
-			let innerRange = [...Array().keys()].map((x) => x + 1);
-			return {
-				name: val,
-				// data: gridAPs.filter((ap) => {
-				// 	gridY == val &&
-				// })
-			};
-		});
-	}, [grid]);
 
 	const getSessionTime = () => {
 		ConfigDataService.getSessionTime()
@@ -148,12 +104,18 @@ const Map = () => {
 		getGridAPs(x, y);
 	};
 
+	const onChangeAPName = (e) => {
+		let name = e.target.value;
+
+		console.log(name);
+		setSelectedAPName(name);
+	};
+
 	const getGridAPs = (x, y) => {
 		let gridaps = aps?.filter((ap) => {
 			return parseInt(ap.gridX) === x && parseInt(ap.gridY) === y;
 		});
 
-		// console.log(gridaps);
 		setGridAPs(gridaps);
 	};
 	useEffect(() => {
@@ -161,6 +123,44 @@ const Map = () => {
 		getSessionTime();
 	}, []);
 
+	useEffect(() => {
+		let gridapnames = gridAPs.map((ap) => {
+			return ap.name;
+		});
+
+		gridapnames = [...new Set(gridapnames)];
+		setDistinctAPs(gridapnames);
+	}, [grid]);
+
+	useEffect(() => {
+		if (selectedAPName == 'all') {
+			setMappedAPs(gridAPs);
+		} else {
+			let filteredAPs = gridAPs?.filter((ap) => {
+				return ap.name === selectedAPName;
+			});
+			setMappedAPs(filteredAPs);
+		}
+	}, [selectedAPName]);
+
+	useEffect(() => {
+		let locData = mappedAPs.map((ap) => {
+			return {
+				x: parseInt(ap.posX),
+				y: parseInt(ap.posY),
+				z: parseInt(ap.quality),
+			};
+		});
+
+		console.log(locData);
+
+		setSeries([
+			{
+				name: selectedAPName,
+				data: locData,
+			},
+		]);
+	}, [mappedAPs]);
 	useEffect(() => {
 		let grids = new Set();
 		aps?.forEach((item) => {
@@ -220,16 +220,43 @@ const Map = () => {
 						</select>
 					</div>
 				</div>
-				<hr className='justify-content-center mt-5' />
-				<div>
-					<h4 className='text-center text-primary'>View Grid</h4>
-					<Chart
-						options={options}
-						series={series}
-						type='heatmap'
-						height={350}
-					/>
-				</div>
+				{grid?.length > 0 && (
+					<div>
+						<hr className='justify-content-center mt-5' />
+						<h4 className='text-center text-primary'>Select an Access Point</h4>
+						<div className='input-group col-lg-4 m-2 mt-4 justify-content-center '>
+							<select onChange={onChangeAPName} className='form-select'>
+								<option className='text-grey h4' value='' disabled selected>
+									Select an Access Point
+								</option>
+								<option className='text-danger h4' value='all'>
+									Select All
+								</option>
+								{distinctAPs.map((ap_name) => (
+									<option
+										value={`${ap_name}`}
+										className='text-primary h4'
+										key={`${ap_name}`}>
+										{`${ap_name}`}
+									</option>
+								))}
+							</select>
+						</div>
+					</div>
+				)}
+
+				{selectedAPName.length > 0 && (
+					<div>
+						<hr className='justify-content-center mt-5' />
+						<h4 className='text-center text-primary'>View Mapping</h4>
+						<Chart
+							options={options}
+							series={series}
+							type='bubble'
+							height={350}
+						/>
+					</div>
+				)}
 			</div>
 		</div>
 	);
