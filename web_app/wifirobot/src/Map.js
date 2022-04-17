@@ -64,7 +64,34 @@ const Map = () => {
 			type: 'category',
 		},
 		yaxis: {
-			max: 70,
+			x: 70,
+		},
+		tooltip: {
+			enabled: true,
+			y: {
+				title: {
+					formatter: function (seriesName) {
+						return `y: `;
+					},
+				},
+				formatter: function (
+					value,
+					{ series, seriesIndex, dataPointIndex, w }
+				) {
+					return `${value}`;
+				},
+			},
+			x: {
+				formatter: function (
+					value,
+					{ series, seriesIndex, dataPointIndex, w }
+				) {
+					return `x: ${value}`;
+				},
+			},
+			z: {
+				title: 'Quality: ',
+			},
 		},
 	});
 
@@ -133,6 +160,25 @@ const Map = () => {
 	}, [grid]);
 
 	useEffect(() => {
+		const randomColor = Math.floor(Math.random() * 16777215).toString(16);
+		const colorString = '#' + randomColor;
+
+		setOptions({
+			...options,
+			colors: [colorString],
+		});
+	}, [selectedAPName]);
+
+	useEffect(() => {
+		setOptions({
+			...options,
+			yaxis: {
+				max: grid[1] + 10,
+			},
+		});
+	}, [grid]);
+
+	useEffect(() => {
 		if (selectedAPName == 'all') {
 			setMappedAPs(gridAPs);
 		} else {
@@ -145,14 +191,18 @@ const Map = () => {
 
 	useEffect(() => {
 		let locData = mappedAPs.map((ap) => {
+			let xVal = parseInt(ap.posX) + Math.floor(Math.random() * (-3 - 3) + 3);
+			let yVal = parseInt(ap.posY) + Math.floor(Math.random() * (-3 - 3) + 3);
+
+			xVal = xVal > grid[0] ? grid[0] : xVal < 0 ? 0 : xVal;
+			yVal = yVal > grid[0] ? grid[0] : yVal < 0 ? 0 : yVal;
+
 			return {
-				x: parseInt(ap.posX),
-				y: parseInt(ap.posY),
+				x: xVal,
+				y: yVal,
 				z: parseInt(ap.quality),
 			};
 		});
-
-		console.log(locData);
 
 		setSeries([
 			{
