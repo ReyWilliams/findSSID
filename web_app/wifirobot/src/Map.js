@@ -4,28 +4,13 @@ import EntryDataService from './services/ap_entries';
 import ConfigDataService from './services/config_service';
 import Moment from 'react-moment';
 
-const config = {
-	container: document.getElementById('heatmapContainer'),
-	// radius: 10,
-	maxOpacity: 0.5,
-	minOpacity: 0,
-	blur: 0.75,
-};
-const heatmapInstance = h337.create(config);
-let dataPoint = {
-	x: 5, // x coordinate of the datapoint, a number
-	y: 5, // y coordinate of the datapoint, a number
-	value: 100, // the value at datapoint(x, y)
-};
-
-heatmapInstance.addData(dataPoint);
-
 const Map = () => {
 	const [aps, setAPs] = useState([]);
 	const [gridAPs, setGridAPs] = useState([]);
 	const [gridSizes, setGridSizes] = useState([]);
 	const [sessionObj, setSessionObj] = useState({});
 	const [grid, setGrid] = useState([]);
+	const [render, setRender] = useState(Math.random());
 
 	const getSessionTime = () => {
 		ConfigDataService.getSessionTime()
@@ -92,7 +77,7 @@ const Map = () => {
 	}, [aps]);
 
 	return (
-		<div className='container-fluid'>
+		<div className=''>
 			<div>
 				<div>
 					<div className='my-2'>
@@ -135,9 +120,10 @@ const Map = () => {
 						</select>
 					</div>
 				</div>
-
-				<hr className='justify-content-center mt-3' />
-				{gridAPs?.length > 0 && <div>Hello</div>}
+				<hr className='justify-content-center mt-5' />
+				<div>
+					<h4 className='text-center text-primary'>View Grid</h4>
+				</div>
 			</div>
 		</div>
 	);
