@@ -3,6 +3,25 @@ import React, { useState, useEffect } from 'react';
 import EntryDataService from './services/ap_entries';
 import ConfigDataService from './services/config_service';
 import Moment from 'react-moment';
+import Chart from 'react-apexcharts';
+
+const generateData = (count, yrange) => {
+	var i = 0;
+	var series = [];
+	while (i < count) {
+		var x = (i + 1).toString();
+		var y =
+			Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min;
+
+		series.push({
+			x: x,
+			y: y,
+		});
+		i++;
+	}
+	console.log(series);
+	return series;
+};
 
 const Map = () => {
 	const [aps, setAPs] = useState([]);
@@ -11,6 +30,87 @@ const Map = () => {
 	const [sessionObj, setSessionObj] = useState({});
 	const [grid, setGrid] = useState([]);
 	const [render, setRender] = useState(Math.random());
+
+	const [series, setSeries] = useState([
+		{
+			name: 'Jan',
+			data: [
+				{ x: '1', y: 3 },
+				{ x: '2', y: 5 },
+			],
+		},
+	]);
+
+	const [options, setOptions] = useState({
+		chart: {
+			height: 350,
+			type: 'heatmap',
+		},
+		plotOptions: {
+			heatmap: {
+				shadeIntensity: 0.5,
+				radius: 0,
+				useFillColorAsStroke: true,
+				// colorScale: {
+				// 	ranges: [
+				// 		{
+				// 			from: -30,
+				// 			to: 5,
+				// 			name: 'low',
+				// 			color: '#00A100',
+				// 		},
+				// 		{
+				// 			from: 6,
+				// 			to: 20,
+				// 			name: 'medium',
+				// 			color: '#128FD9',
+				// 		},
+				// 		{
+				// 			from: 21,
+				// 			to: 45,
+				// 			name: 'high',
+				// 			color: '#FFB200',
+				// 		},
+				// 		{
+				// 			from: 46,
+				// 			to: 55,
+				// 			name: 'extreme',
+				// 			color: '#FF0000',
+				// 		},
+				// 	],
+				// },
+			},
+		},
+		dataLabels: {
+			enabled: true,
+		},
+		stroke: {
+			width: 1,
+		},
+		title: {
+			text: 'Access Point Heat Map',
+			align: 'center',
+		},
+	});
+
+	useEffect(() => {
+		const range = [...Array(grid[1]).keys()].map((x) => x + 1);
+
+		let newSeries = range.map((val) => {
+			let matchingYs = gridAPs.filter((ap) => {
+				return parseInt(ap.posY) == val;
+			});
+			// console.log(matchingYs);
+
+			let innerRange = [...Array().keys()].map((x) => x + 1);
+			return {
+				name: val,
+				// data: gridAPs.filter((ap) => {
+				// 	gridY == val &&
+				// })
+			};
+		});
+	}, [grid]);
 
 	const getSessionTime = () => {
 		ConfigDataService.getSessionTime()
@@ -123,6 +223,12 @@ const Map = () => {
 				<hr className='justify-content-center mt-5' />
 				<div>
 					<h4 className='text-center text-primary'>View Grid</h4>
+					<Chart
+						options={options}
+						series={series}
+						type='heatmap'
+						height={350}
+					/>
 				</div>
 			</div>
 		</div>
